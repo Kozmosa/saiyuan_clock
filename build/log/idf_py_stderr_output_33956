@@ -1,0 +1,1 @@
+E:\Temp\kconfgen_tmpgo9eu6sd:1399: warning: '1' is not a valid value for the bool symbol FREERTOS_ENABLE_BACKWARD_COMPATIBILITY (defined at D:/Develop/esp-idf/components/freertos/Kconfig:156). Assignment ignored.

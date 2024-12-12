@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${default}",
+                "./**",
+                "D:/Develop/Espressif/tools/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "compilerPath": "D:/Develop/Espressif/tools/esp-clang/16.0.1-fe4f10a809/esp-clang/bin/clang.exe"
+        }
+    ],
+    "version": 4
+}
