@@ -4,36 +4,28 @@
 #include "sdkconfig.h"
 #include "OLEDDisplay.h"
 #include "utils.h"
+#include "activity.h"
 
 static const char *TAG = "activity.c";
 
-typedef struct {
-    TaskHandle_t* task_handle_p;
-    char* task_name;
-    int last_time;
-    void_callback_t* destroyed_callback;
-    OLEDDisplay_t* oled_p;
-} activity_args_t;
-
-extern void activity_alarm_setting(activity_args_t* args){
+extern void activity_alarm_setting(void* args){
 
 };
-extern void activity_alarm_ringtone_setting(activity_args_t* args);
-extern void activity_alarm_ringing(activity_args_t* args);
-extern void activity_clock_main(activity_args_t* args){
-//    OLEDDisplay_t *oled = OLEDDisplay_init(I2C_MASTER_NUM,0x78,I2C_MASTER_SDA_IO,I2C_MASTER_SCL_IO);
+extern void activity_alarm_ringtone_setting(void* arg);
+extern void activity_alarm_ringing(void* arg);
+extern void activity_clock_main(void* arg){
+  	activity_args_t* args = (activity_args_t*)arg;
     OLEDDisplay_t *oled = args->oled_p;
 
-    //    OLEDDisplay_fillRect(oled,7,7,18,18);
-    //    OLEDDisplay_drawRect(oled,6,32,20,20);
-    //    OLEDDisplay_display(oled);
-    //    vTaskDelay(500 / portTICK_PERIOD_MS);
+    char *time_s = args->static_vars->time_s;
+    char *date_s = args->static_vars->date_s;
+    SemaphoreHandle_t print_mux = args->print_mux;
 
     // oled display infos
-    refresh_time();
+    refresh_time(time_s, date_s);
 
     while(1){
-        refresh_time();
+        refresh_time(time_s, date_s);
 
         OLEDDisplay_clear(oled);
 
@@ -67,5 +59,5 @@ extern void activity_clock_main(activity_args_t* args){
 
     vSemaphoreDelete(print_mux);
     vTaskDelete(NULL);
-    xTaskCreate(test_screen_task, "test_screen_task_0", 1024 * 2, (void *)0, 10, NULL);
+    xTaskCreate(activity_alarm_setting, "test_screen_task_0", 1024 * 2, (void *)0, 10, NULL);
 };

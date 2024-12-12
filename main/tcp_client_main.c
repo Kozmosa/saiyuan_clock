@@ -49,39 +49,39 @@ static int before_level = 0;
 static int current_activity = 0;
 
 
-void refresh_time() {
-    // get time from local clock
-    time_t now;
-    struct tm timeinfo;
-
-    time(&now);
-//    time_t now = timestamp_buf;
-    // 将时区设置为中国标准时间
-    setenv("TZ", "CST-8", 1);
-    tzset();
-
-    localtime_r(&now, &timeinfo);
-
-    strftime(time_s, sizeof(time_s), "%H:%M:%S", &timeinfo);
-    strftime(date_s, sizeof(date_s), "%Y-%m-%d", &timeinfo);
-}
-
-void get_time(char *time_a, char *date_a){
-    time_t now;
-    struct tm timeinfo;
-
-    time(&now);
-    // 将时区设置为中国标准时间
-    setenv("TZ", "CST-8", 1);
-    tzset();
-
-    localtime_r(&now, &timeinfo);
-
-    char time_b[64] = {};
-    char date_b[64] = {};
-    strftime(time_b, sizeof(time_b), "%H:%M:%S", &timeinfo);
-    strftime(date_b, sizeof(date_b), "%Y-%m-%d", &timeinfo);
-}
+//void refresh_time() {
+//    // get time from local clock
+//    time_t now;
+//    struct tm timeinfo;
+//
+//    time(&now);
+////    time_t now = timestamp_buf;
+//    // 将时区设置为中国标准时间
+//    setenv("TZ", "CST-8", 1);
+//    tzset();
+//
+//    localtime_r(&now, &timeinfo);
+//
+//    strftime(time_s, sizeof(time_s), "%H:%M:%S", &timeinfo);
+//    strftime(date_s, sizeof(date_s), "%Y-%m-%d", &timeinfo);
+//}
+//
+//void get_time(char *time_a, char *date_a){
+//    time_t now;
+//    struct tm timeinfo;
+//
+//    time(&now);
+//    // 将时区设置为中国标准时间
+//    setenv("TZ", "CST-8", 1);
+//    tzset();
+//
+//    localtime_r(&now, &timeinfo);
+//
+//    char time_b[64] = {};
+//    char date_b[64] = {};
+//    strftime(time_b, sizeof(time_b), "%H:%M:%S", &timeinfo);
+//    strftime(date_b, sizeof(date_b), "%Y-%m-%d", &timeinfo);
+//}
 
 
 // keys configs
@@ -154,6 +154,8 @@ void test_screen_task(void *arg)
     vTaskDelete(NULL);
 }
 
+extern void refresh_time(char* time_s, char* date_s);
+
 void i2c_test_task(void *arg)
 {
     OLEDDisplay_t *oled = OLEDDisplay_init(I2C_MASTER_NUM,0x78,I2C_MASTER_SDA_IO,I2C_MASTER_SCL_IO);
@@ -164,10 +166,10 @@ void i2c_test_task(void *arg)
 //    vTaskDelay(500 / portTICK_PERIOD_MS);
 
     // oled display infos
-    refresh_time();
+    refresh_time(&time_s, &date_s);
 
     while(1){
-        refresh_time();
+        refresh_time(&time_s, &date_s);
 
         OLEDDisplay_clear(oled);
 
@@ -208,8 +210,24 @@ void i2c_app_main(void)
 {
     print_mux = xSemaphoreCreateMutex();
     ESP_LOGI(TAG,"Running");
-    TaskHandle_t current_task;
+    TaskHandle_t current_task = NULL;
+
     activity_args_t args;
+    OLEDDisplay_t *oled = OLEDDisplay_init(I2C_MASTER_NUM,0x78,I2C_MASTER_SDA_IO,I2C_MASTER_SCL_IO);
+    void_callback_t void_callback_example_p = &void_callback_example;
+    static_vars_t static_vars;
+
+    static_vars.time_s = time_s;
+    static_vars.date_s = date_s;
+
+    args.oled_p = oled;
+    args.task_name = "test_screen_task_0";
+    args.task_handle_p = &current_task;
+    args.last_time = 0;
+    args.destroyed_callback = &void_callback_example_p;
+    args.static_vars = &static_vars;
+    args.print_mux = print_mux;
+
     xTaskCreate(i2c_test_task, "i2c_test_task_0", 1024 * 2, &args, 10, &current_task);
 }
 

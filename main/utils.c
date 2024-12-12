@@ -15,6 +15,8 @@
 // common types definitions
 typedef void (*void_callback_t)(void);
 
+extern void refresh_timer_callback(char *time_s, char *date_s);
+extern void get_time(char *time_a, char *date_a);
 // time services
 void refresh_time(char *time_s, char *date_s) {
     // get time from local clock
@@ -49,5 +51,7 @@ void get_time(char *time_a, char *date_a){
     strftime(time_b, sizeof(time_b), "%H:%M:%S", &timeinfo);
     strftime(date_b, sizeof(date_b), "%Y-%m-%d", &timeinfo);
 }
+
+// gpio button services
 
 // uart services
