@@ -7,8 +7,15 @@
 
 typedef void (*void_callback_t)(void);
 typedef struct {
-  char* time_s;
-  char* date_s;
+    time_t alarm_timestamp;
+    char alarm_time_string[32];
+} alarm_t;
+
+typedef struct {
+  char (*time_s)[32];
+  char (*date_s)[32];
+  alarm_t* alarm_list;
+  int alarm_count;
 } static_vars_t;
 
 extern void refresh_time(char *time_s, char *date_s);

@@ -8,17 +8,55 @@
 
 static const char *TAG = "activity.c";
 
-extern void activity_alarm_setting(void* args){
+// temporarily using drawing functions as subtitute for activity
 
-};
-extern void activity_alarm_ringtone_setting(void* arg);
-extern void activity_alarm_ringing(void* arg);
-extern void activity_clock_main(void* arg){
+void draw_alarm_setting(OLEDDisplay_t* oled) {
+    OLEDDisplay_clear(oled);
+
+    OLEDDisplay_setTextAlignment(oled,TEXT_ALIGN_CENTER);
+    OLEDDisplay_setFont(oled,ArialMT_Plain_24);
+    OLEDDisplay_drawString(oled,64, 00, "ALARM!!");
+    OLEDDisplay_display(oled);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+}
+
+extern void activity_alarm_setting(void* arg){
+    ESP_LOGI(TAG,"Switched to activity alarm");
   	activity_args_t* args = (activity_args_t*)arg;
     OLEDDisplay_t *oled = args->oled_p;
 
-    char *time_s = args->static_vars->time_s;
-    char *date_s = args->static_vars->date_s;
+    char *time_s = *(args->static_vars->time_s);
+    char *date_s = *(args->static_vars->date_s);
+    SemaphoreHandle_t print_mux = args->print_mux;
+
+    // oled display infos
+
+    while(1){
+        // oled display infos
+        OLEDDisplay_clear(oled);
+
+        OLEDDisplay_setTextAlignment(oled,TEXT_ALIGN_CENTER);
+        OLEDDisplay_setFont(oled,ArialMT_Plain_24);
+        OLEDDisplay_drawString(oled,64, 00, "HACK!!");
+        OLEDDisplay_display(oled);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        break;
+    }
+
+    vSemaphoreDelete(print_mux);
+    vTaskDelete(NULL);
+    xTaskCreate(activity_clock_main, "main_activity_task_0", 1024 * 2, &args, 10, NULL);
+};
+
+extern void activity_alarm_ringtone_setting(void* arg);
+extern void activity_alarm_ringing(void* arg);
+extern void activity_clock_main(void* arg){
+  	ESP_LOGI(TAG,"Switched to activity main");
+  	activity_args_t* args = (activity_args_t*)arg;
+    OLEDDisplay_t *oled = args->oled_p;
+
+    char *time_s = *(args->static_vars->time_s);
+    char *date_s = *(args->static_vars->date_s);
     SemaphoreHandle_t print_mux = args->print_mux;
 
     // oled display infos
@@ -47,17 +85,11 @@ extern void activity_clock_main(void* arg){
 
         vTaskDelay(680 / portTICK_PERIOD_MS);
 
-        // oled display infos
-        OLEDDisplay_clear(oled);
+        draw_alarm_setting(oled);
 
-        OLEDDisplay_setTextAlignment(oled,TEXT_ALIGN_CENTER);
-        OLEDDisplay_setFont(oled,ArialMT_Plain_24);
-        OLEDDisplay_drawString(oled,64, 00, "HACK!!");
-        OLEDDisplay_display(oled);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
     vSemaphoreDelete(print_mux);
     vTaskDelete(NULL);
-    xTaskCreate(activity_alarm_setting, "test_screen_task_0", 1024 * 2, (void *)0, 10, NULL);
 };

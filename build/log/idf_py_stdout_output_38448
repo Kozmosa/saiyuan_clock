@@ -1,0 +1,121 @@
+[1/9] Performing build step for 'bootloader'
+[1/1] C:\Windows\system32\cmd.exe /C "cd /D E:\Code\LearnESP32\tcp_client\build\bootloader\esp-idf\esptool_py && D:\Develop\Espressif\python_env\idf5.3_py3.11_env\Scripts\python.exe D:/Develop/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 E:/Code/LearnESP32/tcp_client/build/bootloader/bootloader.bin"
+Bootloader binary size 0x5490 bytes. 0x2b70 bytes (34%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/utils.c.obj
+FAILED: esp-idf/main/CMakeFiles/__idf_main.dir/utils.c.obj 
+ccache D:\Develop\Espressif\tools\xtensa-esp-elf\esp-13.2.0_20240530\xtensa-esp-elf\bin\xtensa-esp32s3-elf-gcc.exe -DESP_PLATFORM -DIDF_VER=\"v5.3.2\" -DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\" -DSOC_MMU_PAGE_SIZE=CONFIG_MMU_PAGE_SIZE -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ -DUNITY_INCLUDE_CONFIG_H -D_GLIBCXX_HAVE_POSIX_SEMAPHORE -D_GLIBCXX_USE_POSIX_SEMAPHORE -D_GNU_SOURCE -D_POSIX_READER_WRITER_LOCKS -IE:/Code/LearnESP32/tcp_client/build/config -IE:/Code/LearnESP32/tcp_client/main -ID:/Develop/esp-idf/components/newlib/platform_include -ID:/Develop/esp-idf/components/freertos/config/include -ID:/Develop/esp-idf/components/freertos/config/include/freertos -ID:/Develop/esp-idf/components/freertos/config/xtensa/include -ID:/Develop/esp-idf/components/freertos/FreeRTOS-Kernel/include -ID:/Develop/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include -ID:/Develop/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos -ID:/Develop/esp-idf/components/freertos/esp_additions/include -ID:/Develop/esp-idf/components/esp_hw_support/include -ID:/Develop/esp-idf/components/esp_hw_support/include/soc -ID:/Develop/esp-idf/components/esp_hw_support/include/soc/esp32s3 -ID:/Develop/esp-idf/components/esp_hw_support/dma/include -ID:/Develop/esp-idf/components/esp_hw_support/ldo/include -ID:/Develop/esp-idf/components/esp_hw_support/port/esp32s3/. -ID:/Develop/esp-idf/components/esp_hw_support/port/esp32s3/include -ID:/Develop/esp-idf/components/heap/include -ID:/Develop/esp-idf/components/log/include -ID:/Develop/esp-idf/components/soc/include -ID:/Develop/esp-idf/components/soc/esp32s3 -ID:/Develop/esp-idf/components/soc/esp32s3/include -ID:/Develop/esp-idf/components/hal/platform_port/include -ID:/Develop/esp-idf/components/hal/esp32s3/include -ID:/Develop/esp-idf/components/hal/include -ID:/Develop/esp-idf/components/esp_rom/include -ID:/Develop/esp-idf/components/esp_rom/include/esp32s3 -ID:/Develop/esp-idf/components/esp_rom/esp32s3 -ID:/Develop/esp-idf/components/esp_common/include -ID:/Develop/esp-idf/components/esp_system/include -ID:/Develop/esp-idf/components/esp_system/port/soc -ID:/Develop/esp-idf/components/esp_system/port/include/private -ID:/Develop/esp-idf/components/xtensa/esp32s3/include -ID:/Develop/esp-idf/components/xtensa/include -ID:/Develop/esp-idf/components/xtensa/deprecated_include -ID:/Develop/esp-idf/components/lwip/include -ID:/Develop/esp-idf/components/lwip/include/apps -ID:/Develop/esp-idf/components/lwip/include/apps/sntp -ID:/Develop/esp-idf/components/lwip/lwip/src/include -ID:/Develop/esp-idf/components/lwip/port/include -ID:/Develop/esp-idf/components/lwip/port/freertos/include -ID:/Develop/esp-idf/components/lwip/port/esp32xx/include -ID:/Develop/esp-idf/components/lwip/port/esp32xx/include/arch -ID:/Develop/esp-idf/components/lwip/port/esp32xx/include/sys -ID:/Develop/esp-idf/examples/common_components/protocol_examples_common/include -ID:/Develop/esp-idf/components/esp_driver_gpio/include -ID:/Develop/esp-idf/components/esp_pm/include -ID:/Develop/esp-idf/components/mbedtls/port/include -ID:/Develop/esp-idf/components/mbedtls/mbedtls/include -ID:/Develop/esp-idf/components/mbedtls/mbedtls/library -ID:/Develop/esp-idf/components/mbedtls/esp_crt_bundle/include -ID:/Develop/esp-idf/components/mbedtls/mbedtls/3rdparty/everest/include -ID:/Develop/esp-idf/components/mbedtls/mbedtls/3rdparty/p256-m -ID:/Develop/esp-idf/components/mbedtls/mbedtls/3rdparty/p256-m/p256-m -ID:/Develop/esp-idf/components/esp_app_format/include -ID:/Develop/esp-idf/components/esp_bootloader_format/include -ID:/Develop/esp-idf/components/app_update/include -ID:/Develop/esp-idf/components/bootloader_support/include -ID:/Develop/esp-idf/components/bootloader_support/bootloader_flash/include -ID:/Develop/esp-idf/components/esp_partition/include -ID:/Develop/esp-idf/components/efuse/include -ID:/Develop/esp-idf/components/efuse/esp32s3/include -ID:/Develop/esp-idf/components/esp_mm/include -ID:/Develop/esp-idf/components/spi_flash/include -ID:/Develop/esp-idf/components/pthread/include -ID:/Develop/esp-idf/components/esp_timer/include -ID:/Develop/esp-idf/components/esp_driver_gptimer/include -ID:/Develop/esp-idf/components/esp_ringbuf/include -ID:/Develop/esp-idf/components/esp_driver_uart/include -ID:/Develop/esp-idf/components/vfs/include -ID:/Develop/esp-idf/components/app_trace/include -ID:/Develop/esp-idf/components/esp_event/include -ID:/Develop/esp-idf/components/nvs_flash/include -ID:/Develop/esp-idf/components/esp_driver_pcnt/include -ID:/Develop/esp-idf/components/esp_driver_spi/include -ID:/Develop/esp-idf/components/esp_driver_mcpwm/include -ID:/Develop/esp-idf/components/esp_driver_ana_cmpr/include -ID:/Develop/esp-idf/components/esp_driver_i2s/include -ID:/Develop/esp-idf/components/sdmmc/include -ID:/Develop/esp-idf/components/esp_driver_sdmmc/include -ID:/Develop/esp-idf/components/esp_driver_sdspi/include -ID:/Develop/esp-idf/components/esp_driver_sdio/include -ID:/Develop/esp-idf/components/esp_driver_dac/include -ID:/Develop/esp-idf/components/esp_driver_rmt/include -ID:/Develop/esp-idf/components/esp_driver_tsens/include -ID:/Develop/esp-idf/components/esp_driver_sdm/include -ID:/Develop/esp-idf/components/esp_driver_i2c/include -ID:/Develop/esp-idf/components/esp_driver_ledc/include -ID:/Develop/esp-idf/components/esp_driver_parlio/include -ID:/Develop/esp-idf/components/esp_driver_usb_serial_jtag/include -ID:/Develop/esp-idf/components/driver/deprecated -ID:/Develop/esp-idf/components/driver/i2c/include -ID:/Develop/esp-idf/components/driver/touch_sensor/include -ID:/Develop/esp-idf/components/driver/twai/include -ID:/Develop/esp-idf/components/driver/touch_sensor/esp32s3/include -ID:/Develop/esp-idf/components/esp_phy/include -ID:/Develop/esp-idf/components/esp_phy/esp32s3/include -ID:/Develop/esp-idf/components/esp_vfs_console/include -ID:/Develop/esp-idf/components/esp_netif/include -ID:/Develop/esp-idf/components/wpa_supplicant/include -ID:/Develop/esp-idf/components/wpa_supplicant/port/include -ID:/Develop/esp-idf/components/wpa_supplicant/esp_supplicant/include -ID:/Develop/esp-idf/components/esp_coex/include -ID:/Develop/esp-idf/components/esp_wifi/include -ID:/Develop/esp-idf/components/esp_wifi/wifi_apps/include -ID:/Develop/esp-idf/components/esp_wifi/wifi_apps/nan_app/include -ID:/Develop/esp-idf/components/esp_wifi/include/local -ID:/Develop/esp-idf/components/unity/include -ID:/Develop/esp-idf/components/unity/unity/src -ID:/Develop/esp-idf/components/cmock/CMock/src -ID:/Develop/esp-idf/components/console -ID:/Develop/esp-idf/components/http_parser -ID:/Develop/esp-idf/components/esp-tls -ID:/Develop/esp-idf/components/esp-tls/esp-tls-crypto -ID:/Develop/esp-idf/components/esp_adc/include -ID:/Develop/esp-idf/components/esp_adc/interface -ID:/Develop/esp-idf/components/esp_adc/esp32s3/include -ID:/Develop/esp-idf/components/esp_adc/deprecated/include -ID:/Develop/esp-idf/components/esp_driver_isp/include -ID:/Develop/esp-idf/components/esp_driver_cam/include -ID:/Develop/esp-idf/components/esp_driver_cam/interface -ID:/Develop/esp-idf/components/esp_driver_jpeg/include -ID:/Develop/esp-idf/components/esp_driver_ppa/include -ID:/Develop/esp-idf/components/esp_eth/include -ID:/Develop/esp-idf/components/esp_gdbstub/include -ID:/Develop/esp-idf/components/esp_hid/include -ID:/Develop/esp-idf/components/tcp_transport/include -ID:/Develop/esp-idf/components/esp_http_client/include -ID:/Develop/esp-idf/components/esp_http_server/include -ID:/Develop/esp-idf/components/esp_https_ota/include -ID:/Develop/esp-idf/components/esp_https_server/include -ID:/Develop/esp-idf/components/esp_psram/include -ID:/Develop/esp-idf/components/esp_lcd/include -ID:/Develop/esp-idf/components/esp_lcd/interface -ID:/Develop/esp-idf/components/esp_lcd/rgb/include -ID:/Develop/esp-idf/components/protobuf-c/protobuf-c -ID:/Develop/esp-idf/components/protocomm/include/common -ID:/Develop/esp-idf/components/protocomm/include/security -ID:/Develop/esp-idf/components/protocomm/include/transports -ID:/Develop/esp-idf/components/protocomm/include/crypto/srp6a -ID:/Develop/esp-idf/components/protocomm/proto-c -ID:/Develop/esp-idf/components/esp_local_ctrl/include -ID:/Develop/esp-idf/components/espcoredump/include -ID:/Develop/esp-idf/components/espcoredump/include/port/xtensa -ID:/Develop/esp-idf/components/wear_levelling/include -ID:/Develop/esp-idf/components/fatfs/diskio -ID:/Develop/esp-idf/components/fatfs/src -ID:/Develop/esp-idf/components/fatfs/vfs -ID:/Develop/esp-idf/components/idf_test/include -ID:/Develop/esp-idf/components/idf_test/include/esp32s3 -ID:/Develop/esp-idf/components/ieee802154/include -ID:/Develop/esp-idf/components/json/cJSON -ID:/Develop/esp-idf/components/mqtt/esp-mqtt/include -ID:/Develop/esp-idf/components/nvs_sec_provider/include -ID:/Develop/esp-idf/components/perfmon/include -ID:/Develop/esp-idf/components/spiffs/include -ID:/Develop/esp-idf/components/touch_element/include -ID:/Develop/esp-idf/components/usb/include -ID:/Develop/esp-idf/components/wifi_provisioning/include -mlongcalls  -fno-builtin-memcpy -fno-builtin-memset -fno-builtin-bzero -fno-builtin-stpcpy -fno-builtin-strncpy -fdiagnostics-color=always -ffunction-sections -fdata-sections -Wall -Werror=all -Wno-error=unused-function -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=deprecated-declarations -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-enum-conversion -gdwarf-4 -ggdb -Og -fno-shrink-wrap -fmacro-prefix-map=E:/Code/LearnESP32/tcp_client=. -fmacro-prefix-map=D:/Develop/esp-idf=/IDF -fstrict-volatile-bitfields -fno-jump-tables -fno-tree-switch-conversion -std=gnu17 -Wno-old-style-declaration -MD -MT esp-idf/main/CMakeFiles/__idf_main.dir/utils.c.obj -MF esp-idf\main\CMakeFiles\__idf_main.dir\utils.c.obj.d -o esp-idf/main/CMakeFiles/__idf_main.dir/utils.c.obj -c E:/Code/LearnESP32/tcp_client/main/utils.c
+In file included from D:/Develop/esp-idf/components/esp_driver_gpio/include/driver/gpio.h:12,
+                 from E:/Code/LearnESP32/tcp_client/main/utils.c:7:
+E:/Code/LearnESP32/tcp_client/main/utils.c: In function 'echo_task':
+E:/Code/LearnESP32/tcp_client/main/utils.c:58:39: error: expected ')' before ';' token
+   58 | #define CONFIG_EXAMPLE_UART_PORT_NUM 1;
+      |                                       ^
+D:/Develop/esp-idf/components/esp_common/include/esp_err.h:116:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  116 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:34: note: in expansion of macro 'CONFIG_EXAMPLE_UART_PORT_NUM'
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:95:41: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+   95 |     ESP_ERROR_CHECK(uart_driver_install(ECHO_UART_PORT_NUM, BUF_SIZE * 2, 0, 0, NULL, intr_alloc_flags));
+      |                                         ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:33: note: to match this '('
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                 ^
+D:/Develop/esp-idf/components/esp_common/include/esp_err.h:116:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  116 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:95:41: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+   95 |     ESP_ERROR_CHECK(uart_driver_install(ECHO_UART_PORT_NUM, BUF_SIZE * 2, 0, 0, NULL, intr_alloc_flags));
+      |                                         ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:58:39: error: expected ')' before ';' token
+   58 | #define CONFIG_EXAMPLE_UART_PORT_NUM 1;
+      |                                       ^
+D:/Develop/esp-idf/components/esp_common/include/esp_err.h:116:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  116 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:34: note: in expansion of macro 'CONFIG_EXAMPLE_UART_PORT_NUM'
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:96:39: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+   96 |     ESP_ERROR_CHECK(uart_param_config(ECHO_UART_PORT_NUM, &uart_config));
+      |                                       ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:33: note: to match this '('
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                 ^
+D:/Develop/esp-idf/components/esp_common/include/esp_err.h:116:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  116 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:96:39: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+   96 |     ESP_ERROR_CHECK(uart_param_config(ECHO_UART_PORT_NUM, &uart_config));
+      |                                       ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:58:39: error: expected ')' before ';' token
+   58 | #define CONFIG_EXAMPLE_UART_PORT_NUM 1;
+      |                                       ^
+D:/Develop/esp-idf/components/esp_common/include/esp_err.h:116:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  116 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:34: note: in expansion of macro 'CONFIG_EXAMPLE_UART_PORT_NUM'
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:97:34: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+   97 |     ESP_ERROR_CHECK(uart_set_pin(ECHO_UART_PORT_NUM, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS));
+      |                                  ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:33: note: to match this '('
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                 ^
+D:/Develop/esp-idf/components/esp_common/include/esp_err.h:116:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  116 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:97:34: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+   97 |     ESP_ERROR_CHECK(uart_set_pin(ECHO_UART_PORT_NUM, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS));
+      |                                  ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:58:39: error: expected ')' before ';' token
+   58 | #define CONFIG_EXAMPLE_UART_PORT_NUM 1;
+      |                                       ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:34: note: in expansion of macro 'CONFIG_EXAMPLE_UART_PORT_NUM'
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:104:35: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+  104 |         int len = uart_read_bytes(ECHO_UART_PORT_NUM, data, (BUF_SIZE - 1), 20 / portTICK_PERIOD_MS);
+      |                                   ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:33: note: to match this '('
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                 ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:104:35: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+  104 |         int len = uart_read_bytes(ECHO_UART_PORT_NUM, data, (BUF_SIZE - 1), 20 / portTICK_PERIOD_MS);
+      |                                   ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:58:39: error: expected ')' before ';' token
+   58 | #define CONFIG_EXAMPLE_UART_PORT_NUM 1;
+      |                                       ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:34: note: in expansion of macro 'CONFIG_EXAMPLE_UART_PORT_NUM'
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:106:26: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+  106 |         uart_write_bytes(ECHO_UART_PORT_NUM, (const char *) data, len);
+      |                          ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:69:33: note: to match this '('
+   69 | #define ECHO_UART_PORT_NUM      (CONFIG_EXAMPLE_UART_PORT_NUM)
+      |                                 ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:106:26: note: in expansion of macro 'ECHO_UART_PORT_NUM'
+  106 |         uart_write_bytes(ECHO_UART_PORT_NUM, (const char *) data, len);
+      |                          ^~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c: In function 'uart_app_main':
+E:/Code/LearnESP32/tcp_client/main/utils.c:62:44: error: expected ')' before ';' token
+   62 | #define CONFIG_EXAMPLE_TASK_STACK_SIZE 3072;
+      |                                            ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:71:34: note: in expansion of macro 'CONFIG_EXAMPLE_TASK_STACK_SIZE'
+   71 | #define ECHO_TASK_STACK_SIZE    (CONFIG_EXAMPLE_TASK_STACK_SIZE)
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:116:46: note: in expansion of macro 'ECHO_TASK_STACK_SIZE'
+  116 |     xTaskCreate(echo_task, "uart_echo_task", ECHO_TASK_STACK_SIZE, NULL, 10, NULL);
+      |                                              ^~~~~~~~~~~~~~~~~~~~
+E:/Code/LearnESP32/tcp_client/main/utils.c:71:33: note: to match this '('
+   71 | #define ECHO_TASK_STACK_SIZE    (CONFIG_EXAMPLE_TASK_STACK_SIZE)
+      |                                 ^
+E:/Code/LearnESP32/tcp_client/main/utils.c:116:46: note: in expansion of macro 'ECHO_TASK_STACK_SIZE'
+  116 |     xTaskCreate(echo_task, "uart_echo_task", ECHO_TASK_STACK_SIZE, NULL, 10, NULL);
+      |                                              ^~~~~~~~~~~~~~~~~~~~
+ninja: build stopped: subcommand failed.

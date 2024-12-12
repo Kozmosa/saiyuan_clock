@@ -48,42 +48,6 @@ static bool switch_signal = false;
 static int before_level = 0;
 static int current_activity = 0;
 
-
-//void refresh_time() {
-//    // get time from local clock
-//    time_t now;
-//    struct tm timeinfo;
-//
-//    time(&now);
-////    time_t now = timestamp_buf;
-//    // 将时区设置为中国标准时间
-//    setenv("TZ", "CST-8", 1);
-//    tzset();
-//
-//    localtime_r(&now, &timeinfo);
-//
-//    strftime(time_s, sizeof(time_s), "%H:%M:%S", &timeinfo);
-//    strftime(date_s, sizeof(date_s), "%Y-%m-%d", &timeinfo);
-//}
-//
-//void get_time(char *time_a, char *date_a){
-//    time_t now;
-//    struct tm timeinfo;
-//
-//    time(&now);
-//    // 将时区设置为中国标准时间
-//    setenv("TZ", "CST-8", 1);
-//    tzset();
-//
-//    localtime_r(&now, &timeinfo);
-//
-//    char time_b[64] = {};
-//    char date_b[64] = {};
-//    strftime(time_b, sizeof(time_b), "%H:%M:%S", &timeinfo);
-//    strftime(date_b, sizeof(date_b), "%Y-%m-%d", &timeinfo);
-//}
-
-
 // keys configs
 void void_callback_example(void) {
   // void callback example
@@ -154,7 +118,7 @@ void test_screen_task(void *arg)
     vTaskDelete(NULL);
 }
 
-extern void refresh_time(char* time_s, char* date_s);
+extern void refresh_time(char *time_s, char *date_s);
 
 void i2c_test_task(void *arg)
 {
@@ -166,10 +130,10 @@ void i2c_test_task(void *arg)
 //    vTaskDelay(500 / portTICK_PERIOD_MS);
 
     // oled display infos
-    refresh_time(&time_s, &date_s);
+    refresh_time(time_s, date_s);
 
     while(1){
-        refresh_time(&time_s, &date_s);
+        refresh_time(time_s, date_s);
 
         OLEDDisplay_clear(oled);
 
@@ -217,8 +181,8 @@ void i2c_app_main(void)
     void_callback_t void_callback_example_p = &void_callback_example;
     static_vars_t static_vars;
 
-    static_vars.time_s = time_s;
-    static_vars.date_s = date_s;
+    static_vars.time_s = &time_s;
+    static_vars.date_s = &date_s;
 
     args.oled_p = oled;
     args.task_name = "test_screen_task_0";
@@ -228,7 +192,7 @@ void i2c_app_main(void)
     args.static_vars = &static_vars;
     args.print_mux = print_mux;
 
-    xTaskCreate(i2c_test_task, "i2c_test_task_0", 1024 * 2, &args, 10, &current_task);
+    xTaskCreate(activity_clock_main, "i2c_test_task_0", 1024 * 2, &args, 10, &current_task);
 }
 
 extern void tcp_client(void);
@@ -249,12 +213,10 @@ void app_main(void)
 
     i2c_app_main();
 
+    gpio_
+
     tcp_client();
-
-    gpio_init();
-
     while(1) {
         vTaskDelay(100 / portTICK_PERIOD_MS);
-        check_gpio_key(switch_activity);
     }
 }
