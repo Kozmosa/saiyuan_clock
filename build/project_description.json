@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "tcp_client",
-    "project_version":    "77515ed-dirty",
+    "project_version":    "f4dbccc-dirty",
     "project_path":       "E:/Code/LearnESP32/tcp_client",
     "idf_path":           "D:/Develop/esp-idf",
     "build_dir":          "E:/Code/LearnESP32/tcp_client/build",

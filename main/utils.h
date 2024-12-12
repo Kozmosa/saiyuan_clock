@@ -14,8 +14,9 @@ typedef struct {
 typedef struct {
   char (*time_s)[32];
   char (*date_s)[32];
-  alarm_t* alarm_list;
+  alarm_t* alarms;
   int alarm_count;
+  int alarm_capacity;
 } static_vars_t;
 
 extern void refresh_time(char *time_s, char *date_s);
