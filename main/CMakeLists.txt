@@ -1,7 +1,7 @@
 idf_build_get_property(target IDF_TARGET)
 
 if(${target} STREQUAL "linux")
-    set(requires esp_event esp_stubs protocol_examples_common nvs_flash driver)
+    set(requires esp_event esp_stubs protocol_examples_common nvs_flash driver esp_driver_gpio)
 endif()
 
 if("${CONFIG_EXAMPLE_IPV4}" STREQUAL y)

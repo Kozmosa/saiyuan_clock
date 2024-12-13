@@ -5,7 +5,9 @@
             "includePath": [
                 "${default}",
                 "./**",
-                "D:/Develop/Espressif/tools/**"
+                "D:\\Develop\\esp-idf\\components\\**",
+                "D:\\Develop\\esp-idf\\components\\log\\include\\**",
+                "D:/Develop/esp-idf/components/log/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -14,7 +16,7 @@
             ],
             "cStandard": "c17",
             "cppStandard": "c++14",
-            "compilerPath": "D:/Develop/Espressif/tools/esp-clang/16.0.1-fe4f10a809/esp-clang/bin/clang.exe"
+            "compilerPath": "D:/Develop/llvm/bin/clang.exe"
         }
     ],
     "version": 4

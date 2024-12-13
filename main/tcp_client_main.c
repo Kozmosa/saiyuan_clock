@@ -144,10 +144,14 @@ void app_main(void)
      */
     ESP_ERROR_CHECK(example_connect());
 
+    tcp_client();
+
     i2c_app_main();
 
-    tcp_client();
+    uart_app_main();
+
     while(1) {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        ESP_LOGI(TAG,"main loop.");
     }
 }
