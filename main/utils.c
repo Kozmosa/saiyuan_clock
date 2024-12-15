@@ -11,6 +11,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "utils.h"
+#include "bsp_matrixkey.h"
 
 #include <sys/time.h>
 
@@ -83,7 +84,23 @@ void check_alarms(alarm_t* alarms, int alarm_count, int alarm_capacity) {
 }
 
 // gpio button services
+void button_app_main(void)
+{
+    uint8_t key_value = 0;
 
+    printf("start\r\n");
+    MatrixKey_GPIO_Init();
+    while(1)
+    {
+       key_value = Get_Key();
+       if( key_value != 'n' )//如果有按键按下
+       {
+            printf("KEY = %c\r\n",key_value);
+       }
+       key_value = 0;
+       delay_1ms(500);
+    }
+}
 
 // uart services
 #define ECHO_TEST_TXD  (GPIO_NUM_38)
