@@ -1,3 +1,7 @@
 {
-    "C_Cpp.default.compilerPath": "D:/Develop/Espressif/tools/esp-clang/16.0.1-fe4f10a809/esp-clang/bin/clang.exe"
+    "C_Cpp.default.compilerPath": "D:/Develop/Espressif/tools/esp-clang/16.0.1-fe4f10a809/esp-clang/bin/clang.exe",
+    "files.associations": {
+        "oleddisplay.h": "c",
+        "time.h": "c"
+    }
 }

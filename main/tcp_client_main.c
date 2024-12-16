@@ -42,11 +42,16 @@ static const char *TAG = "oled-example";
 SemaphoreHandle_t print_mux = NULL;
 
 // static variables definitions
+#define ALARM_DEFINED 1
+#define STATIC_VARS_CONTAINER static_vars_global
+
 static char time_s[32] = {};
 static char date_s[32] = {};
 static int alarm_count = 0;
 static int alarm_capacity = 8;
 static alarm_t alarms[8];
+
+static static_vars_t static_vars_global;
 
 static bool switch_signal = false;
 static int before_level = 0;
@@ -100,7 +105,7 @@ void check_gpio_key(void_callback_t callback) {
 
 extern void refresh_time(char *time_s, char *date_s);
 
-void i2c_app_main(void)
+void i2c_app_main(static_vars_t* static_vars_container)
 {
     print_mux = xSemaphoreCreateMutex();
     ESP_LOGI(TAG,"Running");
@@ -110,19 +115,18 @@ void i2c_app_main(void)
     OLEDDisplay_t *oled = OLEDDisplay_init(I2C_MASTER_NUM,0x78,I2C_MASTER_SDA_IO,I2C_MASTER_SCL_IO);
     void_callback_t void_callback_example_p = &void_callback_example;
 
-    static static_vars_t static_vars_global;
-	static_vars_global.time_s = &time_s;
-	static_vars_global.date_s = &date_s;
-	static_vars_global.alarm_capacity = &alarm_capacity;
-	static_vars_global.alarm_count = &alarm_count;
-	static_vars_global.alarms = &alarms;
+    alarm_t sample_alarm;
+    sample_alarm.alarm_timestamp = 0;
+    alarms[0] = sample_alarm;
+    alarm_capacity = 8;
+    alarm_count = 1;
 
     args.oled_p = oled;
     args.task_name = "test_screen_task_0";
     args.task_handle_p = &current_task;
     args.last_time = 0;
     args.destroyed_callback = &void_callback_example_p;
-    args.static_vars = &static_vars_global;
+    args.static_vars = static_vars_container;
     args.print_mux = print_mux;
 
     xTaskCreate(activity_clock_main, "i2c_test_task_0", 1024 * 2, &args, 10, &current_task);
@@ -146,9 +150,15 @@ void app_main(void)
 
     tcp_client();
 
-    i2c_app_main();
+	static_vars_global.time_s = &time_s;
+	static_vars_global.date_s = &date_s;
+	static_vars_global.alarm_capacity = &alarm_capacity;
+	static_vars_global.alarm_count = &alarm_count;
+	static_vars_global.alarms = &alarms;
 
-    uart_app_main();
+    i2c_app_main(&static_vars_global);
+
+    uart_app_main(&static_vars_global);
 
     while(1) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
