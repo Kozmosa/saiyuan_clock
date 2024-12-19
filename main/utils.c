@@ -27,7 +27,8 @@ extern bool check_alarm(alarm_t* alarm);
 extern void alarm_ring(void);
 extern void check_alarms(static_vars_t* static_vars_container);
 extern void button_app_main(void);
-static void echo_task(void *arg);
+extern int button_key_check(void);
+void echo_task(void *arg);
 extern void alarm_task(void* pvParameters);
 extern void uart_app_main(static_vars_t* static_vars_container);
 extern void command_handler(char* command, static_vars_t* static_vars_container);
@@ -84,7 +85,8 @@ extern bool check_alarm(alarm_t* alarm) {
 }
 
 extern void alarm_ring(void) {
-    // alarm ring
+    // alarm ring|E
+    ESP_LOGI(TAG, "Alarm ring");
 }
 
 extern void check_alarms(static_vars_t* static_vars_container) {
@@ -99,6 +101,27 @@ extern void check_alarms(static_vars_t* static_vars_container) {
             ESP_LOGI(TAG, "Alarm alarm");
             alarm_ring();
         }
+    }
+}
+
+// alarm setting services
+extern void alarm_set(static_vars_t* static_vars_container, int hh, int mm, int ss) {
+    // set alarm
+    alarm_t* alarms = static_vars_container->alarms;
+    int* alarm_count = static_vars_container->alarm_count;
+    int* alarm_capacity = static_vars_container->alarm_capacity;
+    if(*alarm_count < *alarm_capacity) {
+        alarm_t new_alarm;
+        time_t now;
+        time(&now);
+        new_alarm.alarm_timestamp = hh*3600 + mm*60 + ss + now;
+        alarms[*alarm_count] = new_alarm;
+        (*alarm_count)++;
+        ESP_LOGI(TAG, "Alarm set, current alarm count %d, alarm capacity %d", *alarm_count, *alarm_capacity);
+        ESP_LOGI(TAG, "Alarm set, new alarm timestamp: %lld, time converted to HH:MM:SS is %d:%d:%d", new_alarm.alarm_timestamp, hh, mm, ss);
+    }
+    else {
+        ESP_LOGI(TAG, "Alarm capacity full.");
     }
 }
 
@@ -121,6 +144,30 @@ extern void button_app_main(void)
     }
 }
 
+enum BUTTON_KEY_FUNCTIONS {
+    BUTTON_KEY_MAIN_ACTIVITY = 0,
+    BUTTON_KEY_ALARM_ACTIVITY,
+    BUTTON_KEY_ALARM_RINGTONE_ACTIVITY,
+    BUTTON_KEY_ALARM_SETTING_ACTIVITY,
+    BUTTON_KEY_CLICK_UP,
+    BUTTON_KEY_CLICK_DOWN,
+    BUTTON_KEY_CLICK_LEFT,
+    BUTTON_KEY_CLICK_RIGHT,
+    BUTTON_KEY_CONFIRM,
+    BUTTON_KEY_CANCEL,
+    BUTTON_KEY_RESET
+};
+
+extern int button_key_check(void) {
+    // uint8_t key_value = 0;
+    // key_value = Get_Key();
+    // if( key_value != 'n' )//如果有按键按下
+    // {
+    //     return key_value;
+    // }
+    return BUTTON_KEY_ALARM_ACTIVITY;
+}
+
 // uart services
 #define ECHO_TEST_TXD  (GPIO_NUM_38)
 #define ECHO_TEST_RXD  (GPIO_NUM_36)
@@ -138,7 +185,7 @@ extern void clear_string(char* origin, char* dest, int len) {
     dest[i] = '\0';
 }
 
-static void echo_task(void *arg)
+void echo_task(void *arg)
 {
     static_vars_t* static_vars_container = (static_vars_t*)arg;
     /* Configure parameters of an UART driver,

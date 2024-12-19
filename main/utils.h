@@ -8,6 +8,7 @@
 #define ALARM_DEFINED
 
 typedef void (*void_callback_t)(void);
+
 typedef struct {
     time_t alarm_timestamp;
     char alarm_time_string[32];
@@ -30,8 +31,10 @@ extern void get_time(char *time_a, char *date_a);
 extern bool check_alarm(alarm_t* alarm);
 extern void alarm_ring(void);
 extern void check_alarms(static_vars_t* static_vars_container);
+extern void alarm_set(static_vars_t* static_vars_container, int hh, int mm, int ss);
 extern void button_app_main(void);
-static void echo_task(void *arg);
+extern int button_key_check(void);
+void echo_task(void *arg);
 extern void alarm_task(void* pvParameters);
 extern void uart_app_main(static_vars_t* static_vars_container);
 extern void command_handler(char* command, static_vars_t* static_vars_container);
