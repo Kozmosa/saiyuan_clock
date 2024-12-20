@@ -75,7 +75,7 @@ extern void activity_alarm_setting(void* arg){
                 alarm_t set_alarm;
                 strcpy(set_alarm.alarm_time_string, time_str);
                 set_alarm.alarm_timestamp = convert_hhmmss_to_timestamp(alarm_hh, alarm_mm, alarm_ss);
-                if(static_vars_container->alarm_count < static_vars_container->alarm_capacity) {
+                if(*(static_vars_container->alarm_count) < *(static_vars_container->alarm_capacity)) {
                     static_vars_container->alarms[*(static_vars_container->alarm_count)].alarm_timestamp = set_alarm.alarm_timestamp;
                     strcpy(static_vars_container->alarms[*(static_vars_container->alarm_count)].alarm_time_string, set_alarm.alarm_time_string);
                     (*(static_vars_container->alarm_count))++;
@@ -175,7 +175,30 @@ extern void activity_alarm_ringing(void* arg) {
     while(1) {
         int current_key = button_key_check();
         ESP_LOGI(TAG,"ALARM_RINGING activity BLOCKED, waiting for key down.");
-        if(current_key == BUTTON_KEY_CONFIRM || current_key == BUTTON_KEY_CANCEL) {
+        // real ringing
+        *(args->static_vars->isCommand) = true;
+        command_t beep = {"alarm", 5};
+        strcpy(args->static_vars->command_last->command_str, "alarm");
+        args->static_vars->command_last->length = beep.length;
+        *(args->static_vars->command_last_index) = 2;
+        *(args->static_vars->isCommand) = true;
+        
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        
+        if(current_key == BUTTON_KEY_CONFIRM) {
+            break;
+        } else if(current_key == BUTTON_KEY_CANCEL) {
+            // implementation of skip clock function
+            OLEDDisplay_clear(oled);
+            OLEDDisplay_setTextAlignment(oled,TEXT_ALIGN_CENTER);
+            OLEDDisplay_setFont(oled,ArialMT_Plain_16);
+            OLEDDisplay_drawString(oled,64, 00, "Skip for 5min");
+            OLEDDisplay_display(oled);
+            
+            // skip for 5 minutes
+            alarm_t* nearest_alarm = find_nearest_alarm(args->static_vars);
+            nearest_alarm->alarm_timestamp += 300;
+            vTaskDelay(100 / portTICK_PERIOD_MS);
             break;
         }
         vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -215,10 +238,6 @@ extern void activity_clock_main(void* arg){
         OLEDDisplay_display(oled);
         ESP_LOGI(TAG,"Draw App Name: 637 Clock");
 
-        vTaskDelay(680 / portTICK_PERIOD_MS);
-
-        // draw_alarm_setting(oled);
-
         // check if it is triggered to switch activity
         enum BUTTON_KEY_FUNCTIONS key = button_key_check();
         switch (key)
@@ -232,18 +251,37 @@ extern void activity_clock_main(void* arg){
             command_t beep = {"beep", 4};
             strcpy(args->static_vars->command_last->command_str, "beep");
             args->static_vars->command_last->length = beep.length;
+            *(args->static_vars->command_last_index) = 1;
             *(args->static_vars->isCommand) = true;
             break;
 
         case BUTTON_KEY_ALARM_SETTING_ACTIVITY:
             ESP_LOGI(TAG, "Alarm setting command has been triggered.");
             activity_alarm_setting(args);
-        
+
+        case BUTTON_KEY_LIGHT_ON:
+            ESP_LOGI(TAG, "Light on command has been triggered.");
+            *(args->static_vars->command_last_index) = 3;
+            *(args->static_vars->isCommand) = true;
+            break;
+
+        case BUTTON_KEY_LIGHT_OFF:
+            ESP_LOGI(TAG, "Light off command has been triggered.");
+            *(args->static_vars->command_last_index) = 4;
+            *(args->static_vars->isCommand) = true;
+            break;
+
         default:
             break;
         }
 
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        // check alarms
+        bool isRinging = check_alarms(args->static_vars);
+        if(isRinging) {
+            activity_alarm_ringing(args);
+        }
+
+        vTaskDelay(900 / portTICK_PERIOD_MS);
         // usleep(1000000);
     }
     ESP_LOGI(TAG,"Activity main has been drawn. Then delete.");

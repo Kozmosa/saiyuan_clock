@@ -25,7 +25,7 @@ extern void refresh_time(char *time_s, char *date_s);
 extern void get_time(char *time_a, char *date_a);
 extern bool check_alarm(alarm_t* alarm);
 extern void alarm_ring(alarm_t* alarm, static_vars_t* static_vars_container);
-extern void check_alarms(static_vars_t* static_vars_container);
+extern bool check_alarms(static_vars_t* static_vars_container);
 extern void button_app_main(void);
 extern int button_key_check(void);
 void echo_task(void *arg);
@@ -34,6 +34,7 @@ extern void uart_app_main(static_vars_t* static_vars_container);
 extern void command_handler(char* command, static_vars_t* static_vars_container);
 extern void convert_time_to_hhmmss(time_t time, int* hh, int* mm, int* ss);
 extern time_t convert_hhmmss_to_timestamp(int hh, int mm, int ss);
+extern alarm_t* find_nearest_alarm(static_vars_t* static_vars_container);
 
 // time services
 extern void refresh_time(char *time_s, char *date_s) {
@@ -81,7 +82,10 @@ extern bool check_alarm(alarm_t* alarm) {
     time_t alarm_time = alarm->alarm_timestamp;
     time_t now;
     time(&now);
-    if(now - alarm_time < 10) {
+    ESP_LOGI(TAG, "Current timestamp: %lld", now);
+    ESP_LOGI(TAG, "Alarm timestamp: %lld", alarm_time);
+    ESP_LOGI(TAG, "Time difference: %lld", now - alarm_time);
+    if(now - alarm_time < 60) {
         return true;
     } else {
         return false;
@@ -105,8 +109,20 @@ extern void alarm_ring(alarm_t* alarm, static_vars_t* static_vars_container) {
     }
 }
 
-extern void check_alarms(static_vars_t* static_vars_container) {
+extern bool check_alarms(static_vars_t* static_vars_container) {
     // check alarms
+    alarm_t* alarms = static_vars_container->alarms;
+    int alarm_count = *(static_vars_container->alarm_count);
+    int alarm_capacity = *(static_vars_container->alarm_capacity);
+    ESP_LOGI(TAG, "Checking alarms, current alarm count %d, alarm capacity %d", alarm_count, alarm_capacity);
+    for(int i = 0; i < alarm_count; i++) {
+        ESP_LOGI(TAG, "Checking alarm %d", i);
+        if (check_alarm(&alarms[i]))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 // alarm setting services
@@ -128,6 +144,24 @@ extern void alarm_set(static_vars_t* static_vars_container, int hh, int mm, int 
     else {
         ESP_LOGI(TAG, "Alarm capacity full.");
     }
+}
+
+extern alarm_t* find_nearest_alarm(static_vars_t* static_vars_container) {
+    alarm_t* alarms = static_vars_container->alarms;
+    int alarm_count = *(static_vars_container->alarm_count);
+    int alarm_capacity = *(static_vars_container->alarm_capacity);
+    time_t now;
+    time(&now);
+    time_t nearest_time = 0;
+
+    alarm_t* nearest_alarm = NULL;
+    for(int i = 0; i < alarm_count; i++) {
+        if(alarms[i].alarm_timestamp - now < nearest_time) {
+            nearest_time = alarms[i].alarm_timestamp - now;
+            nearest_alarm = &alarms[i];
+        }
+    }
+    return nearest_alarm;
 }
 
 // gpio button services
@@ -200,6 +234,12 @@ extern int button_key_transform(uint8_t key_value) {
     case 'A':
         return BUTTON_KEY_RESET;
         break;
+    case 'B':
+        return BUTTON_KEY_LIGHT_ON;
+        break;
+    case 'C':
+        return BUTTON_KEY_LIGHT_OFF;
+        break;
     default:
         return BUTTON_KEY_MAIN_ACTIVITY;
         break;
@@ -264,10 +304,27 @@ void echo_task(void *arg)
         int len = uart_read_bytes(UART_NUM_1, data, BUF_SIZE, 20 / portTICK_RATE_MS);
         // Write data back to the UART
         char* test_command = "test_command\n";
+        // send commands
         if(*(static_vars_container->isCommand)) {
             ESP_LOGI(TAG, "Command detected.");
             // uart_write_bytes(UART_NUM_1, (const char*)static_vars_container->command_last->command_str, sizeof(char)*strlen(static_vars_container->command_last->command_str));
-            uart_write_bytes(UART_NUM_1, "beep\n", sizeof(char)*5);
+            if (*(static_vars_container->command_last_index) == 1)
+            {
+                uart_write_bytes(UART_NUM_1, "beep\n", sizeof(char)*sizeof("beep\n"));
+            }
+            else if(*(static_vars_container->command_last_index) == 2) 
+            {
+                uart_write_bytes(UART_NUM_1, "alarm\n", sizeof(char)*sizeof("alarm\n"));
+            }
+            else if(*(static_vars_container->command_last_index) == 3)
+            {
+                uart_write_bytes(UART_NUM_1, "lighton\n", sizeof(char)*sizeof("lighton\n"));
+            }
+            else if(*(static_vars_container->command_last_index) == 4)
+            {
+                uart_write_bytes(UART_NUM_1, "lightoff\n", sizeof(char)*sizeof("lightoff\n"));
+            }
+            // uart_write_bytes(UART_NUM_1, "beep\n", sizeof(char)*sizeof("beep\n"));
             *(static_vars_container->isCommand) = false;
         } else {
             uart_write_bytes(UART_NUM_1, (const char*)test_command, sizeof(char)*strlen(test_command));
@@ -317,13 +374,20 @@ extern void alarm_task(void* pvParameters) {
     // #ifdef ALARM_DEFINED
     static_vars_t* static_vars_container = (static_vars_t*)pvParameters;
     alarm_t* alarms = static_vars_container->alarms;
-    for(int i = 0; i < *(static_vars_container->alarm_count); i++) {
-        ESP_LOGI(TAG, "Checking alarm...");
-        alarm_t* alarm = &alarms[i];
-        if(check_alarm(alarm)) {
-            ESP_LOGI(TAG, "Alarm ring");
-            alarm_ring(alarm, static_vars_container);
+    while (1)
+    {
+        /* code */
+        ESP_LOGI(TAG, "Loop[Checking alarms.]");
+        ESP_LOGI(TAG, "Loop[Current Alarm count: %d]", *(static_vars_container->alarm_count));
+        for(int i = 0; i < *(static_vars_container->alarm_count); i++) {
+            ESP_LOGI(TAG, "Checking alarm...");
+            alarm_t* alarm = &alarms[i];
+            if(check_alarm(alarm)) {
+                ESP_LOGI(TAG, "Alarm ring");
+                alarm_ring(alarm, static_vars_container);
+            }
         }
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
     // #endif
     vTaskDelete(NULL);

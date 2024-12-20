@@ -58,6 +58,7 @@ static static_vars_t static_vars_global;
 static bool switch_signal = false;
 static int before_level = 0;
 static int current_activity = 0;
+static int command_last_index = 0;
 
 // keys configs
 void void_callback_example(void) {
@@ -161,6 +162,7 @@ void app_main(void)
     static_vars_global.commands = &commands;
     static_vars_global.command_last = &command_last;
     static_vars_global.isCommand = &isCommand;
+    static_vars_global.command_last_index = &command_last_index;
 
     // alarm initialization
     alarm_t sample_alarm;
