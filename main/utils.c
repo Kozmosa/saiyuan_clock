@@ -24,7 +24,7 @@ const char* TAG = "utils.c";
 extern void refresh_time(char *time_s, char *date_s);
 extern void get_time(char *time_a, char *date_a);
 extern bool check_alarm(alarm_t* alarm);
-extern void alarm_ring(void);
+extern void alarm_ring(alarm_t* alarm, static_vars_t* static_vars_container);
 extern void check_alarms(static_vars_t* static_vars_container);
 extern void button_app_main(void);
 extern int button_key_check(void);
@@ -32,6 +32,8 @@ void echo_task(void *arg);
 extern void alarm_task(void* pvParameters);
 extern void uart_app_main(static_vars_t* static_vars_container);
 extern void command_handler(char* command, static_vars_t* static_vars_container);
+extern void convert_time_to_hhmmss(time_t time, int* hh, int* mm, int* ss);
+extern time_t convert_hhmmss_to_timestamp(int hh, int mm, int ss);
 
 // time services
 extern void refresh_time(char *time_s, char *date_s) {
@@ -72,7 +74,7 @@ extern bool check_alarm(alarm_t* alarm) {
     if(alarm != NULL){
         ESP_LOGI(TAG, "Detected alarm.");
         ESP_LOGI(TAG, "Alarm timestamp: %lld", alarm->alarm_timestamp);
-        if(alarm->alarm_time_string != '\0') {
+        if(alarm->alarm_timestamp != 0) {
             ESP_LOGI(TAG, "Alarm time string: %s", alarm->alarm_time_string);
         }
     }
@@ -93,7 +95,8 @@ extern void alarm_ring(alarm_t* alarm, static_vars_t* static_vars_container) {
     {
         ESP_LOGI(TAG, "Alarm ringing blocked.");
         // check if alarm is confirmed  
-        if(static_vars_container->current_key == BUTTON_KEY_CONFIRM) {
+        int current_key = button_key_check();
+        if(current_key == BUTTON_KEY_CONFIRM) {
             ESP_LOGI(TAG, "Alarm ring confirmed.");
             break;
         }
@@ -146,20 +149,20 @@ extern void button_app_main(void)
     // }
 }
 
-enum BUTTON_KEY_FUNCTIONS {
-    BUTTON_KEY_MAIN_ACTIVITY = 0,
-    BUTTON_KEY_ALARM_ACTIVITY,
-    BUTTON_KEY_ALARM_RINGTONE_ACTIVITY,
-    BUTTON_KEY_ALARM_SETTING_ACTIVITY,
-    BUTTON_KEY_CLICK_UP,
-    BUTTON_KEY_CLICK_DOWN,
-    BUTTON_KEY_CLICK_LEFT,
-    BUTTON_KEY_CLICK_RIGHT,
-    BUTTON_KEY_CONFIRM,
-    BUTTON_KEY_CANCEL,
-    BUTTON_KEY_RESET,
-    BUTTON_KEY_BLANK
-};
+// enum BUTTON_KEY_FUNCTIONS {
+//     BUTTON_KEY_MAIN_ACTIVITY = 0,
+//     BUTTON_KEY_ALARM_ACTIVITY,
+//     BUTTON_KEY_ALARM_RINGTONE_ACTIVITY,
+//     BUTTON_KEY_ALARM_SETTING_ACTIVITY,
+//     BUTTON_KEY_CLICK_UP,
+//     BUTTON_KEY_CLICK_DOWN,
+//     BUTTON_KEY_CLICK_LEFT,
+//     BUTTON_KEY_CLICK_RIGHT,
+//     BUTTON_KEY_CONFIRM,
+//     BUTTON_KEY_CANCEL,
+//     BUTTON_KEY_RESET,
+//     BUTTON_KEY_BLANK
+// };
 
 extern int button_key_transform(uint8_t key_value) {
     switch (key_value)
@@ -319,7 +322,7 @@ extern void alarm_task(void* pvParameters) {
         alarm_t* alarm = &alarms[i];
         if(check_alarm(alarm)) {
             ESP_LOGI(TAG, "Alarm ring");
-            alarm_ring();
+            alarm_ring(alarm, static_vars_container);
         }
     }
     // #endif
@@ -333,4 +336,26 @@ extern void alarm_app_main(static_vars_t* static_vars_container) {
 extern void uart_app_main(static_vars_t* static_vars_container)
 {
     xTaskCreate(echo_task, "uart_echo_task", 4096, static_vars_container, 10, NULL);
+}
+
+extern void convert_time_to_hhmmss(time_t time, int* hh, int* mm, int* ss) {
+    struct tm timeinfo;
+    localtime_r(&time, &timeinfo);
+    *hh = timeinfo.tm_hour;
+    *mm = timeinfo.tm_min;
+    *ss = timeinfo.tm_sec;
+}
+
+extern time_t convert_hhmmss_to_timestamp(int hh, int mm, int ss) {
+    time_t now;
+    struct tm timeinfo;
+
+    time(&now);
+    localtime_r(&now, &timeinfo);
+
+    timeinfo.tm_hour = hh;
+    timeinfo.tm_min = mm;
+    timeinfo.tm_sec = ss;
+
+    return mktime(&timeinfo);
 }

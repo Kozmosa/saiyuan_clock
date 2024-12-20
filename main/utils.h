@@ -28,9 +28,6 @@ typedef struct {
   command_t* (*commands)[8];
   command_t* command_last;
   bool* isCommand;
-  bool* isConfirmed;
-  bool* isCanceled;
-  int current_key;
 } static_vars_t;
 
 
@@ -38,10 +35,27 @@ typedef struct {
 // extern void get_time(char *time_a, char *date_a);
 // extern void uart_app_main(void);
 
+enum BUTTON_KEY_FUNCTIONS {
+    BUTTON_KEY_MAIN_ACTIVITY = 0,
+    BUTTON_KEY_ALARM_ACTIVITY,
+    BUTTON_KEY_ALARM_RINGTONE_ACTIVITY,
+    BUTTON_KEY_ALARM_SETTING_ACTIVITY,
+    BUTTON_KEY_CLICK_UP,
+    BUTTON_KEY_CLICK_DOWN,
+    BUTTON_KEY_CLICK_LEFT,
+    BUTTON_KEY_CLICK_RIGHT,
+    BUTTON_KEY_CONFIRM,
+    BUTTON_KEY_CANCEL,
+    BUTTON_KEY_RESET,
+    BUTTON_KEY_BLANK
+};
+
 extern void refresh_time(char *time_s, char *date_s);
 extern void get_time(char *time_a, char *date_a);
+extern void convert_time_to_hhmmss(time_t time, int* hh, int* mm, int* ss);
+extern time_t convert_hhmmss_to_timestamp(int hh, int mm, int ss);
 extern bool check_alarm(alarm_t* alarm);
-extern void alarm_ring(void);
+extern void alarm_ring(alarm_t* alarm, static_vars_t* static_vars_container);
 extern void check_alarms(static_vars_t* static_vars_container);
 extern void alarm_set(static_vars_t* static_vars_container, int hh, int mm, int ss);
 extern void button_app_main(void);

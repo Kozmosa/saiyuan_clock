@@ -18,7 +18,6 @@
 #include "freertos/queue.h"
 
 // clock headers
-#include "utils.h"
 #include "activity.h"
 
 #define CONFIG_EXAMPLE_CONNECT_WIFI 1
