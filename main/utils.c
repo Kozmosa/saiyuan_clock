@@ -72,7 +72,9 @@ extern bool check_alarm(alarm_t* alarm) {
     if(alarm != NULL){
         ESP_LOGI(TAG, "Detected alarm.");
         ESP_LOGI(TAG, "Alarm timestamp: %lld", alarm->alarm_timestamp);
-        ESP_LOGI(TAG, "Alarm time string: %s", alarm->alarm_time_string);
+        if(alarm->alarm_time_string != '\0') {
+            ESP_LOGI(TAG, "Alarm time string: %s", alarm->alarm_time_string);
+        }
     }
     time_t alarm_time = alarm->alarm_timestamp;
     time_t now;
@@ -84,24 +86,24 @@ extern bool check_alarm(alarm_t* alarm) {
     }
 }
 
-extern void alarm_ring(void) {
+extern void alarm_ring(alarm_t* alarm, static_vars_t* static_vars_container) {
     // alarm ring|E
-    ESP_LOGI(TAG, "Alarm ring");
+    ESP_LOGI(TAG, "Alarm ring triggered.");
+    while (1)
+    {
+        ESP_LOGI(TAG, "Alarm ringing blocked.");
+        // check if alarm is confirmed  
+        if(static_vars_container->current_key == BUTTON_KEY_CONFIRM) {
+            ESP_LOGI(TAG, "Alarm ring confirmed.");
+            break;
+        }
+        // do nothing but delay
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
 
 extern void check_alarms(static_vars_t* static_vars_container) {
-    int alarm_count = *(static_vars_container->alarm_count);
-    int alarm_capacity = *(static_vars_container->alarm_capacity);
-    alarm_t* alarms = static_vars_container->alarms;
-
-    for(int i = 0; i < alarm_count; i++) {
-        bool alarm_status = check_alarm(&alarms[i]);
-        ESP_LOGI(TAG, "Alarm status: %d", alarm_status);
-        if(alarm_status) {
-            ESP_LOGI(TAG, "Alarm alarm");
-            alarm_ring();
-        }
-    }
+    // check alarms
 }
 
 // alarm setting services
@@ -130,18 +132,18 @@ extern void button_app_main(void)
 {
     uint8_t key_value = 0;
 
-    printf("start\r\n");
+    ESP_LOGI(TAG, "Start checking button key...");
     MatrixKey_GPIO_Init();
-    while(1)
-    {
+    // while(1)
+    // {
        key_value = Get_Key();
        if( key_value != 'n' )//如果有按键按下
        {
-            printf("KEY = %c\r\n",key_value);
+            ESP_LOGI(TAG, "KEY = %c", key_value);
        }
        key_value = 0;
        delay_1ms(500);
-    }
+    // }
 }
 
 enum BUTTON_KEY_FUNCTIONS {
@@ -155,17 +157,65 @@ enum BUTTON_KEY_FUNCTIONS {
     BUTTON_KEY_CLICK_RIGHT,
     BUTTON_KEY_CONFIRM,
     BUTTON_KEY_CANCEL,
-    BUTTON_KEY_RESET
+    BUTTON_KEY_RESET,
+    BUTTON_KEY_BLANK
 };
 
+extern int button_key_transform(uint8_t key_value) {
+    switch (key_value)
+    {
+    case '1':
+        return BUTTON_KEY_MAIN_ACTIVITY;
+        break;
+    case '2':
+        return BUTTON_KEY_ALARM_ACTIVITY;
+        break;
+    case '3':
+        return BUTTON_KEY_ALARM_RINGTONE_ACTIVITY;
+        break;
+    case '4':
+        return BUTTON_KEY_ALARM_SETTING_ACTIVITY;
+        break;
+    case '5':
+        return BUTTON_KEY_CLICK_UP;
+        break;
+    case '6':
+        return BUTTON_KEY_CLICK_DOWN;
+        break;
+    case '7':
+        return BUTTON_KEY_CLICK_LEFT;
+        break;
+    case '8':
+        return BUTTON_KEY_CLICK_RIGHT;
+        break;
+    case '9':
+        return BUTTON_KEY_CONFIRM;
+        break;
+    case '0':
+        return BUTTON_KEY_CANCEL;
+        break;
+    case 'A':
+        return BUTTON_KEY_RESET;
+        break;
+    default:
+        return BUTTON_KEY_MAIN_ACTIVITY;
+        break;
+    }
+}
+
 extern int button_key_check(void) {
-    // uint8_t key_value = 0;
-    // key_value = Get_Key();
-    // if( key_value != 'n' )//如果有按键按下
-    // {
-    //     return key_value;
-    // }
-    return BUTTON_KEY_ALARM_ACTIVITY;
+    uint8_t key_value = 0;
+
+    ESP_LOGI(TAG, "button_key_check() running...");
+    MatrixKey_GPIO_Init();
+    key_value = Get_Key();
+    if( key_value != 'n' )//如果有按键按下
+    {
+        ESP_LOGI(TAG, "KEY = %c", key_value);
+        return button_key_transform(key_value);
+    }
+    key_value = 0;
+    return BUTTON_KEY_BLANK;
 }
 
 // uart services
@@ -210,22 +260,29 @@ void echo_task(void *arg)
         // Read data from the UART
         int len = uart_read_bytes(UART_NUM_1, data, BUF_SIZE, 20 / portTICK_RATE_MS);
         // Write data back to the UART
-        char* test_command = "hello_command\n";
-        uart_write_bytes(UART_NUM_1, (const char*)test_command, sizeof(char)*strlen(test_command));
-        #ifdef UART_COMMAND_INTERACT_FLAG
-        // check if there is command waiting to be send
-        char* commands_list = static_vars_container->commands_list;
-        int commands_count = static_vars_container->commands_count;
-        if(commands_count) {
-            for(int i = 0; i < commands_count; i++) {
-                uart_write_bytes(UART_NUM_1, commands_list[i], sizeof(char)*32);
-                ESP_LOGI(TAG, "UART Sent Command: %s", commands_list[i]);
-                commands_count--;
-                // clear comomands_list
-                commands_list[i] = '';
-            }
+        char* test_command = "test_command\n";
+        if(*(static_vars_container->isCommand)) {
+            ESP_LOGI(TAG, "Command detected.");
+            // uart_write_bytes(UART_NUM_1, (const char*)static_vars_container->command_last->command_str, sizeof(char)*strlen(static_vars_container->command_last->command_str));
+            uart_write_bytes(UART_NUM_1, "beep\n", sizeof(char)*5);
+            *(static_vars_container->isCommand) = false;
+        } else {
+            uart_write_bytes(UART_NUM_1, (const char*)test_command, sizeof(char)*strlen(test_command));
         }
-        #endif
+        // #ifdef UART_COMMAND_INTERACT_FLAG
+        // // check if there is command waiting to be send
+        // char* commands_list = static_vars_container->commands_list;
+        // int commands_count = static_vars_container->commands_count;
+        // if(commands_count) {
+        //     for(int i = 0; i < commands_count; i++) {
+        //         uart_write_bytes(UART_NUM_1, commands_list[i], sizeof(char)*32);
+        //         ESP_LOGI(TAG, "UART Sent Command: %s", commands_list[i]);
+        //         commands_count--;
+        //         // clear comomands_list
+        //         commands_list[i] = '';
+        //     }
+        // }
+        // #endif
         ESP_LOGI(TAG, "Data length: %d", len);
         if(len) {
             clear_string((char*)data, (char*)data_dest, len);
@@ -236,6 +293,8 @@ void echo_task(void *arg)
         uart_flush(UART_NUM_1);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
+
+    vTaskDelete(NULL);
 }
 
 // we save a command list at here
@@ -246,17 +305,13 @@ extern void command_handler(char* command, static_vars_t* static_vars_container)
     if (strcmp(command, "test_command") == 0) {
         ESP_LOGI(TAG, "Test command handled.");
     }
-    else if(strcmp(command, "check_alarms") == 0) {
-        ESP_LOGI(TAG, "Checking alarm...");
-        check_alarms(&static_vars_container);
-    }
     else {
         ESP_LOGI(TAG, "Unknown command.");
     }
 }
 
 extern void alarm_task(void* pvParameters) {
-    #ifdef ALARM_DEFINED
+    // #ifdef ALARM_DEFINED
     static_vars_t* static_vars_container = (static_vars_t*)pvParameters;
     alarm_t* alarms = static_vars_container->alarms;
     for(int i = 0; i < *(static_vars_container->alarm_count); i++) {
@@ -264,16 +319,18 @@ extern void alarm_task(void* pvParameters) {
         alarm_t* alarm = &alarms[i];
         if(check_alarm(alarm)) {
             ESP_LOGI(TAG, "Alarm ring");
+            alarm_ring();
         }
     }
-    #endif
+    // #endif
+    vTaskDelete(NULL);
 }
 
 extern void alarm_app_main(static_vars_t* static_vars_container) {
-    xTaskCreate(alarm_task, "alarm_task", 1024, static_vars_container, 10, NULL);
+    xTaskCreate(alarm_task, "alarm_task", 4096, static_vars_container, 10, NULL);
 }
 
 extern void uart_app_main(static_vars_t* static_vars_container)
 {
-    xTaskCreate(echo_task, "uart_echo_task", 1024, static_vars_container, 10, NULL);
+    xTaskCreate(echo_task, "uart_echo_task", 4096, static_vars_container, 10, NULL);
 }

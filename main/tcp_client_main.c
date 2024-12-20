@@ -50,6 +50,9 @@ static char date_s[32] = {};
 static int alarm_count = 0;
 static int alarm_capacity = 8;
 static alarm_t alarms[8];
+static command_t commands[8];
+static command_t command_last;
+static bool isCommand = false;
 
 static static_vars_t static_vars_global;
 
@@ -129,7 +132,8 @@ void i2c_app_main(static_vars_t* static_vars_container)
     args.static_vars = static_vars_container;
     args.print_mux = print_mux;
 
-    xTaskCreate(activity_clock_main, "i2c_test_task_0", 1024 * 2, &args, 10, &current_task);
+    // xTaskCreate(activity_clock_main, "i2c_test_task_0", 1024 * 2, &args, 10, &current_task);
+    activity_clock_main(&args);
 }
 
 extern void tcp_client(void);
@@ -155,10 +159,24 @@ void app_main(void)
 	static_vars_global.alarm_capacity = &alarm_capacity;
 	static_vars_global.alarm_count = &alarm_count;
 	static_vars_global.alarms = &alarms;
+    static_vars_global.commands = &commands;
+    static_vars_global.command_last = &command_last;
+    static_vars_global.isCommand = &isCommand;
 
-    i2c_app_main(&static_vars_global);
+    // alarm initialization
+    alarm_t sample_alarm;
+    time_t now;
+    time(&now);
+    sample_alarm.alarm_timestamp = now + 120;
+    alarms[0] = sample_alarm;
+    alarm_count = 1;
 
     uart_app_main(&static_vars_global);
+
+    alarm_app_main(&static_vars_global);
+
+    i2c_app_main(&static_vars_global);
+    
 
     while(1) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);

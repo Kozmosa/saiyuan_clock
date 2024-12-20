@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "activity.h"
 #include "unistd.h"
+#include "string.h"
 
 static const char *TAG = "activity.c";
 
@@ -129,27 +130,35 @@ extern void activity_clock_main(void* arg){
         OLEDDisplay_display(oled);
         ESP_LOGI(TAG,"Draw App Name: 637 Clock");
 
-        // vTaskDelay(680 / portTICK_PERIOD_MS);
+        vTaskDelay(680 / portTICK_PERIOD_MS);
 
-        // // draw_alarm_setting(oled);
+        // draw_alarm_setting(oled);
 
-        // // check if it is triggered to switch activity
-        // enum BUTTON_KEY_FUNCTIONS key = button_key_check();
-        // switch (key)
-        // {
-        // case BUTTON_KEY_ALARM_ACTIVITY:
-        //     activity_alarm_ringing(args);
-        //     break;
+        // check if it is triggered to switch activity
+        enum BUTTON_KEY_FUNCTIONS key = button_key_check();
+        switch (key)
+        {
+        case BUTTON_KEY_ALARM_ACTIVITY:
+            activity_alarm_ringing(args);
+            break;
+
+        case BUTTON_KEY_ALARM_RINGTONE_ACTIVITY:
+            ESP_LOGI(TAG,"Beep command has been triggered.");
+            command_t beep = {"beep", 4};
+            strcpy(args->static_vars->command_last->command_str, "beep");
+            args->static_vars->command_last->length = beep.length;
+            *(args->static_vars->isCommand) = true;
+            break;
         
-        // default:
-        //     break;
-        // }
+        default:
+            break;
+        }
 
-        // vTaskDelay(1000 / portTICK_RATE_MS);
-        usleep(1000000);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        // usleep(1000000);
     }
     ESP_LOGI(TAG,"Activity main has been drawn. Then delete.");
 
     vSemaphoreDelete(print_mux);
-    vTaskDelete(NULL);
+    // vTaskDelete(NULL);
 };

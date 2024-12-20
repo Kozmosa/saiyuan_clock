@@ -3,6 +3,7 @@
     "files.associations": {
         "oleddisplay.h": "c",
         "time.h": "c",
-        "bsp_matrixkey.h": "c"
+        "bsp_matrixkey.h": "c",
+        "esp_rom_sys.h": "c"
     }
 }

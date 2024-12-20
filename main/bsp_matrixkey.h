@@ -30,14 +30,14 @@
 #include "driver/spi_master.h"
 #include "nvs_flash.h"
 
-#define GPIO_IN1    18
-#define GPIO_IN2    17
-#define GPIO_IN3    16
-#define GPIO_IN4    15
-#define GPIO_IN5    41
-#define GPIO_IN6    42
-#define GPIO_IN7    45
-#define GPIO_IN8    46
+#define GPIO_IN1    9
+#define GPIO_IN2    10
+#define GPIO_IN3    11
+#define GPIO_IN4    12
+#define GPIO_IN5    39
+#define GPIO_IN6    40
+#define GPIO_IN7    41
+#define GPIO_IN8    42
 
 uint8_t Get_Key(void);
 void MatrixKey_GPIO_Init(void);

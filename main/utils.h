@@ -15,12 +15,24 @@ typedef struct {
 } alarm_t;
 
 typedef struct {
+  char command_str[128];
+  int length;
+} command_t;
+
+typedef struct {
   char (*time_s)[32];
   char (*date_s)[32];
   alarm_t* alarms;
   int* alarm_count;
   int* alarm_capacity;
+  command_t* (*commands)[8];
+  command_t* command_last;
+  bool* isCommand;
+  bool* isConfirmed;
+  bool* isCanceled;
+  int current_key;
 } static_vars_t;
+
 
 // extern void refresh_time(char *time_s, char *date_s);
 // extern void get_time(char *time_a, char *date_a);
@@ -36,6 +48,7 @@ extern void button_app_main(void);
 extern int button_key_check(void);
 void echo_task(void *arg);
 extern void alarm_task(void* pvParameters);
+extern void alarm_app_main(static_vars_t* static_vars_container);
 extern void uart_app_main(static_vars_t* static_vars_container);
 extern void command_handler(char* command, static_vars_t* static_vars_container);
 
