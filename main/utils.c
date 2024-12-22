@@ -13,6 +13,7 @@
 #include "freertos/queue.h"
 #include "utils.h"
 #include "bsp_matrixkey.h"
+#include "math.h"
 
 #include <sys/time.h>
 
@@ -85,7 +86,7 @@ extern bool check_alarm(alarm_t* alarm) {
     ESP_LOGI(TAG, "Current timestamp: %lld", now);
     ESP_LOGI(TAG, "Alarm timestamp: %lld", alarm_time);
     ESP_LOGI(TAG, "Time difference: %lld", now - alarm_time);
-    if(now - alarm_time < 60) {
+    if(abs(now - alarm_time) < 60) {
         return true;
     } else {
         return false;
@@ -324,6 +325,13 @@ void echo_task(void *arg)
             {
                 uart_write_bytes(UART_NUM_1, "lightoff\n", sizeof(char)*sizeof("lightoff\n"));
             }
+            else if(*(static_vars_container->command_last_index) == 5)
+            {
+                // data sync logics
+                uart_write_bytes(UART_NUM_1, static_vars_container->uart_data_tx, sizeof(char)*strlen(static_vars_container->uart_data_tx));
+                // waiting for sc32 to read data
+                vTaskDelay(500 / portTICK_PERIOD_MS);
+            }
             // uart_write_bytes(UART_NUM_1, "beep\n", sizeof(char)*sizeof("beep\n"));
             *(static_vars_container->isCommand) = false;
         } else {
@@ -364,6 +372,35 @@ extern void command_handler(char* command, static_vars_t* static_vars_container)
     // command handler
     if (strcmp(command, "test_command") == 0) {
         ESP_LOGI(TAG, "Test command handled.");
+    }
+    else if(strcmp(command, "datasync_start") == 0) {
+        alarm_t* alarms = static_vars_container->alarms;
+        int alarm_count = *(static_vars_container->alarm_count);
+        char uart_data_tx_buffer[256] = {};
+        for(int i = 0; i<alarm_count; i++) {
+            ESP_LOGI(TAG, "Transferring Alarm %d: %lld", i, alarms[i].alarm_timestamp);
+            if(i == alarm_count - 1) {
+                strncat(uart_data_tx_buffer, 'N', sizeof(char));
+                char timestamp_str[32] = {'\0'};
+                itoa(alarms[i].alarm_timestamp, timestamp_str, 10);
+                strncat(uart_data_tx_buffer, timestamp_str, sizeof(char)*16);
+                strncat(uart_data_tx_buffer, 'E', sizeof(char));
+                // sprintf(uart_data_tx_buffer, "%sN%dE\n", uart_data_tx_buffer, (int)alarms[i].alarm_timestamp);
+                // deprecated
+            } else {
+                strncat(uart_data_tx_buffer, 'N', sizeof(char));
+                char timestamp_str[32] = {'\0'};
+                itoa(alarms[i].alarm_timestamp, timestamp_str, 10);
+                strncat(uart_data_tx_buffer, timestamp_str, sizeof(char)*16);
+
+                // sprintf(uart_data_tx_buffer, "%sN%d", uart_data_tx_buffer, (int)alarms[i].alarm_timestamp);
+                // deprecated
+            }
+        }
+        *(static_vars_container->isCommand) = true;
+        *(static_vars_container->command_last_index) = 5;
+        strcpy(static_vars_container->uart_data_tx, uart_data_tx_buffer);
+        ESP_LOGI(TAG, "Transferring Data Sync Data: %s", static_vars_container->uart_data_tx);
     }
     else {
         ESP_LOGI(TAG, "Unknown command.");

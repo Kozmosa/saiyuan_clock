@@ -59,6 +59,7 @@ static bool switch_signal = false;
 static int before_level = 0;
 static int current_activity = 0;
 static int command_last_index = 0;
+static int current_ringtone = 0;
 
 // keys configs
 void void_callback_example(void) {

@@ -130,6 +130,7 @@ extern void activity_alarm_ringtone_setting(void* arg) {
     // alarm ringtone setting activity
     ESP_LOGI(TAG,"Switched to activity Alarm Ringtone Setting.");
   	activity_args_t* args = (activity_args_t*)arg;
+    static_vars_t* static_vars_container = args->static_vars;
     OLEDDisplay_t *oled = args->oled_p;
 
     char *time_s = *(args->static_vars->time_s);
@@ -137,13 +138,52 @@ extern void activity_alarm_ringtone_setting(void* arg) {
     SemaphoreHandle_t print_mux = args->print_mux;
 
     refresh_time(time_s, date_s);
-    OLEDDisplay_clear(oled);
 
-    OLEDDisplay_setTextAlignment(oled,TEXT_ALIGN_CENTER);
-    OLEDDisplay_setFont(oled,ArialMT_Plain_16);
-    OLEDDisplay_drawString(oled,64, 00, "Setting ringtone");
-    OLEDDisplay_display(oled);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    int selected_ringtone = 1;
+
+    while(1){
+        OLEDDisplay_clear(oled);
+
+        OLEDDisplay_setTextAlignment(oled,TEXT_ALIGN_CENTER);
+        OLEDDisplay_setFont(oled,ArialMT_Plain_16);
+        OLEDDisplay_drawString(oled,64, 00, "Setting ringtone");
+        OLEDDisplay_setFont(oled,ArialMT_Plain_10);
+        OLEDDisplay_drawString(oled,64, 25, "1. Beep");
+        OLEDDisplay_drawString(oled,64, 37, "2. Ringtone");
+        OLEDDisplay_drawString(oled,64, 50, "Selected: 1");
+        OLEDDisplay_display(oled);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+
+        int current_key = button_key_check();
+        if(current_key == BUTTON_KEY_CANCEL) {
+            break;
+        }
+        else if(current_key == BUTTON_KEY_CANCEL) {
+            // cacnel
+            break;
+        }
+        else if(current_key == BUTTON_KEY_CONFIRM) {
+            //confirm
+            *(static_vars_container->current_ringtone) = selected_ringtone;
+            ESP_LOGI(TAG,"Selected ringtone: %d", selected_ringtone);
+            break;
+        }
+        else if(current_key == BUTTON_KEY_CLICK_UP) {
+            selected_ringtone = 1;
+            continue;
+        }
+        else if(current_key == BUTTON_KEY_CLICK_DOWN) {
+            selected_ringtone = 2;
+            continue;
+        }
+        else
+        {
+            /* code */
+            ESP_LOGI(TAG,"Unknown key pressed.");
+        }
+        
+    }
+
 
     ESP_LOGI(TAG,"ALARM_RINGTONE_SETTING activity user interface has been drawn.");
 };
@@ -245,6 +285,10 @@ extern void activity_clock_main(void* arg){
         case BUTTON_KEY_ALARM_ACTIVITY:
             activity_alarm_ringing(args);
             break;
+        
+        case BUTTON_KEY_MAIN_ACTIVITY:
+            ESP_LOGI(TAG, "Main activity has been triggered.");
+            continue;
 
         case BUTTON_KEY_ALARM_RINGTONE_ACTIVITY:
             ESP_LOGI(TAG,"Beep command has been triggered.");

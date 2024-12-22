@@ -29,6 +29,8 @@ typedef struct {
   command_t* command_last;
   bool* isCommand;
   int* command_last_index;
+  char uart_data_tx[256];
+  int* current_ringtone;
 } static_vars_t;
 
 
